@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
@@ -46,9 +47,7 @@ export function Navbar({ nombre, apellido, rol }: NavbarProps) {
 
         {/* Logo */}
         <div className="flex items-center gap-2.5 flex-shrink-0">
-          <div className="w-7 h-7 rounded-lg bg-primary-600/60 border border-primary-500/30 flex items-center justify-center text-white text-xs font-bold">
-            E
-          </div>
+          <Image src="/escudo.jpeg" alt="Escudo IE Ramón Messa Londoño" width={32} height={32} className="rounded-md object-contain" />
           <span className="font-semibold text-white text-sm hidden sm:inline">EduGestión</span>
         </div>
 

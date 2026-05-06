@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
@@ -40,8 +41,8 @@ export default function LoginPage() {
         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary-700/30 to-transparent" />
 
         <div className="relative z-10 text-center select-none">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-primary-800/60 border border-primary-700/40 text-white text-4xl font-bold mb-8 shadow-[inset_0_1px_1px_rgba(255,255,255,0.07)]">
-            E
+          <div className="inline-flex items-center justify-center mb-8">
+            <Image src="/escudo.jpeg" alt="Escudo IE Ramón Messa Londoño" width={100} height={100} className="object-contain drop-shadow-lg" />
           </div>
           <h1 className="text-3xl font-bold text-white mb-3 tracking-tight">EduGestión</h1>
           <p className="text-primary-300 text-sm leading-relaxed">
@@ -60,9 +61,7 @@ export default function LoginPage() {
 
         {/* Logo mobile */}
         <div className="lg:hidden flex items-center gap-3 mb-10">
-          <div className="w-10 h-10 rounded-xl bg-primary-700 flex items-center justify-center text-white font-bold">
-            E
-          </div>
+          <Image src="/escudo.jpeg" alt="Escudo IE Ramón Messa Londoño" width={44} height={44} className="object-contain" />
           <div>
             <p className="font-bold text-slate-900 text-sm leading-tight">EduGestión</p>
             <p className="text-xs text-slate-500 leading-tight">IE Ramón Messa Londoño</p>
