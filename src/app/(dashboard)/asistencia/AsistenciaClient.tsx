@@ -88,8 +88,8 @@ export default function AsistenciaClient({ asignaciones, esRector, adminData }: 
 
   function onCambiarEstado(estudianteId: string, estado: EstadoAsistencia) {
     setEstados((prev) => ({ ...prev, [estudianteId]: estado }))
-    // Si cambia a un estado que no requiere motivo, limpia la observación
-    if (estado === 'presente' || estado === 'ausente') {
+    // Si cambia a presente, limpia la observación (los demás estados la conservan)
+    if (estado === 'presente') {
       setObservaciones((prev) => { const next = { ...prev }; delete next[estudianteId]; return next })
     }
   }

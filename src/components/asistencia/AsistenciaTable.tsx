@@ -11,7 +11,7 @@ const estadoConfig: Record<EstadoAsistencia, { label: string; className: string 
   excusa:   { label: 'Excusa',   className: 'bg-slate-50 text-slate-600 border-slate-200' },
 }
 
-const CON_MOTIVO: EstadoAsistencia[] = ['tarde', 'excusa']
+const CON_MOTIVO: EstadoAsistencia[] = ['ausente', 'tarde', 'excusa']
 
 interface Fila {
   estudiante_id: string
