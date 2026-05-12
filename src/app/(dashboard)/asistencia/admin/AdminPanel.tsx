@@ -7,6 +7,8 @@ import { GruposManager } from './GruposManager'
 import { MateriasManager } from './MateriasManager'
 import { EstudiantesManager } from './EstudiantesManager'
 import { AsignacionesManager } from './AsignacionesManager'
+import { DocentesManager } from './DocentesManager'
+import type { DocenteAdmin } from '@/actions/admin'
 
 type Grado = { id: string; nombre: string; nivel: number }
 type Grupo = {
@@ -34,6 +36,7 @@ export interface AdminData {
   materias: Materia[]
   estudiantes: Estudiante[]
   docentes: Docente[]
+  docentesAdmin: DocenteAdmin[]
   asignaciones: Asignacion[]
 }
 
@@ -43,11 +46,12 @@ const TABS = [
   { key: 'materias', label: 'Materias' },
   { key: 'estudiantes', label: 'Estudiantes' },
   { key: 'asignaciones', label: 'Asignaciones' },
+  { key: 'docentes', label: 'Docentes' },
 ] as const
 
 type Tab = (typeof TABS)[number]['key']
 
-export function AdminPanel({ grados, grupos, materias, estudiantes, docentes, asignaciones }: AdminData) {
+export function AdminPanel({ grados, grupos, materias, estudiantes, docentes, docentesAdmin, asignaciones }: AdminData) {
   const [tab, setTab] = useState<Tab>('grados')
 
   const soloDocentes = docentes.filter((d) => d.rol === 'docente')
@@ -88,6 +92,7 @@ export function AdminPanel({ grados, grupos, materias, estudiantes, docentes, as
             materias={materias}
           />
         )}
+        {tab === 'docentes' && <DocentesManager docentes={docentesAdmin} />}
       </div>
     </div>
   )

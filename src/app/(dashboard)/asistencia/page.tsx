@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { getAsignacionesDocente, getAsignacionesTodas } from '@/actions/asistencia'
-import { getGrados, getGruposAdmin, getMateriasAdmin, getEstudiantesAdmin, getDocentes, getAsignacionesAdmin } from '@/actions/admin'
+import { getGrados, getGruposAdmin, getMateriasAdmin, getEstudiantesAdmin, getDocentes, getAsignacionesAdmin, getDocentesAdmin } from '@/actions/admin'
 import AsistenciaClient from './AsistenciaClient'
 import type { Profile } from '@/types/database'
 import type { AdminData } from './admin/AdminPanel'
@@ -32,7 +32,7 @@ export default async function AsistenciaPage() {
     )
   }
 
-  const [asignaciones, grados, grupos, materias, estudiantes, docentes, asignacionesAdmin] = await Promise.all([
+  const [asignaciones, grados, grupos, materias, estudiantes, docentes, asignacionesAdmin, docentesAdmin] = await Promise.all([
     getAsignacionesTodas(),
     getGrados(),
     getGruposAdmin(),
@@ -40,6 +40,7 @@ export default async function AsistenciaPage() {
     getEstudiantesAdmin(),
     getDocentes(),
     getAsignacionesAdmin(),
+    getDocentesAdmin(),
   ])
 
   const adminData: AdminData = {
@@ -48,6 +49,7 @@ export default async function AsistenciaPage() {
     materias,
     estudiantes: estudiantes as AdminData['estudiantes'],
     docentes,
+    docentesAdmin,
     asignaciones: asignacionesAdmin as AdminData['asignaciones'],
   }
 

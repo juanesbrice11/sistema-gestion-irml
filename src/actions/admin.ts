@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 async function getDb() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -214,4 +215,129 @@ export async function getDocentes() {
     .order('apellido')
   if (error) throw new Error(error.message)
   return (data ?? []) as { id: string; nombre: string; apellido: string; rol: string }[]
+}
+
+// ===== DOCENTES CRUD (panel administración) =====
+
+export type DocenteAdmin = {
+  id: string
+  auth_user_id: string
+  nombre: string
+  apellido: string
+  rol: 'docente' | 'administrativo'
+  email: string
+}
+
+export async function getDocentesAdmin(): Promise<DocenteAdmin[]> {
+  const admin = createAdminClient()
+
+  // Fetch profiles with rol docente/administrativo using admin client to avoid type narrowing issues
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const db = admin as any
+  const { data: profiles, error } = await db
+    .from('profiles')
+    .select('id, auth_user_id, nombre, apellido, rol')
+    .in('rol', ['docente', 'administrativo'])
+    .order('apellido')
+  if (error) throw new Error(error.message)
+
+  const profileList = (profiles ?? []) as Array<{
+    id: string; auth_user_id: string; nombre: string; apellido: string; rol: string
+  }>
+
+  if (profileList.length === 0) return []
+
+  // Fetch auth users to get emails
+  const { data: authData, error: authError } = await admin.auth.admin.listUsers({ perPage: 1000 })
+  if (authError) throw new Error(authError.message)
+
+  const emailMap = new Map(authData.users.map((u) => [u.id, u.email ?? '']))
+
+  return profileList.map((p) => ({
+    id: p.id,
+    auth_user_id: p.auth_user_id,
+    nombre: p.nombre,
+    apellido: p.apellido,
+    rol: p.rol as 'docente' | 'administrativo',
+    email: emailMap.get(p.auth_user_id) ?? '',
+  }))
+}
+
+export async function crearDocente(data: {
+  nombre: string
+  apellido: string
+  email: string
+  password: string
+  rol: 'docente' | 'administrativo'
+}) {
+  const admin = createAdminClient()
+
+  // 1. Create auth user
+  const { data: authUser, error: authError } = await admin.auth.admin.createUser({
+    email: data.email,
+    password: data.password,
+    email_confirm: true,
+  })
+  if (authError) throw new Error(authError.message)
+
+  // 2. Create profile (trigger may or may not exist — upsert to be safe)
+  const db = admin as any
+  const { error: profileError } = await db
+    .from('profiles')
+    .upsert({
+      auth_user_id: authUser.user.id,
+      nombre: data.nombre,
+      apellido: data.apellido,
+      rol: data.rol,
+    })
+  if (profileError) {
+    // Rollback auth user if profile creation fails
+    await admin.auth.admin.deleteUser(authUser.user.id)
+    throw new Error(profileError.message)
+  }
+}
+
+export async function actualizarDocente(
+  profileId: string,
+  authUserId: string,
+  data: {
+    nombre: string
+    apellido: string
+    rol: 'docente' | 'administrativo'
+    email?: string
+    password?: string
+  }
+) {
+  const admin = createAdminClient()
+  const db = admin as any
+
+  // Update profile
+  const { error: profileError } = await db
+    .from('profiles')
+    .update({ nombre: data.nombre, apellido: data.apellido, rol: data.rol })
+    .eq('id', profileId)
+  if (profileError) throw new Error(profileError.message)
+
+  // Optionally update auth user email / password
+  const authUpdates: { email?: string; password?: string } = {}
+  if (data.email) authUpdates.email = data.email
+  if (data.password) authUpdates.password = data.password
+
+  if (Object.keys(authUpdates).length > 0) {
+    const { error: authError } = await admin.auth.admin.updateUserById(authUserId, authUpdates)
+    if (authError) throw new Error(authError.message)
+  }
+}
+
+export async function eliminarDocente(profileId: string, authUserId: string) {
+  const admin = createAdminClient()
+  const db = admin as any
+
+  // 1. Delete profile row
+  const { error: profileError } = await db.from('profiles').delete().eq('id', profileId)
+  if (profileError) throw new Error(profileError.message)
+
+  // 2. Delete auth user
+  const { error: authError } = await admin.auth.admin.deleteUser(authUserId)
+  if (authError) throw new Error(authError.message)
 }
