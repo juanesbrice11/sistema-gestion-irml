@@ -107,12 +107,27 @@ export default function NotasClient({ asignaciones, periodos, esRector }: Props)
     setCargando(false)
   }
 
+  async function cargarEstudiantes(asigId: string) {
+    const asig = asignaciones.find((a) => a.id === asigId)
+    const grupoId = asig?.grupos?.id
+    if (!grupoId) return
+    setCargando(true)
+    const [alumnos, pesosData] = await Promise.all([
+      getEstudiantesPorGrupo(grupoId),
+      getPesosPeriodo(asigId, periodos),
+    ])
+    setEstudiantes(alumnos ?? [])
+    setPesos(pesosData)
+    setCargando(false)
+  }
+
   function onSeleccionarAsignacion(id: string) {
     setAsignacionId(id)
     setEstudiantes([])
     setActividades([])
     setNotasMap({})
     if (id && periodoId) cargar(id, periodoId)
+    else if (id && tab === 'informes') cargarEstudiantes(id)
   }
 
   function onSeleccionarPeriodo(id: string) {
