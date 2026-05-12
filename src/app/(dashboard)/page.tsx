@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import type { Profile } from '@/types/database'
-import { IconClipboard, IconBook, IconPackage, IconChevronRight } from '@/components/ui/icons'
+import { IconClipboard, IconBook, IconChevronRight } from '@/components/ui/icons'
 
 const roleLabel: Record<string, string> = {
   rector: 'Rector',
@@ -52,15 +52,6 @@ export default async function DashboardPage() {
               colorClass="bg-secondary-50 text-secondary-700"
             />
           </>
-        )}
-        {(typedProfile?.rol === 'rector' || typedProfile?.rol === 'administrativo') && (
-          <StatCard
-            title="Inventario"
-            description="Controla recursos y préstamos del colegio."
-            href="/inventario"
-            Icon={IconPackage}
-            colorClass="bg-amber-50 text-amber-700"
-          />
         )}
       </div>
     </div>

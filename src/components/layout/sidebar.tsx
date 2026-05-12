@@ -17,7 +17,6 @@ const navItems: NavItem[] = [
   { href: '/', label: 'Inicio', icon: '🏠', roles: ['rector', 'docente', 'administrativo'] },
   { href: '/asistencia', label: 'Asistencia', icon: '📋', roles: ['rector', 'docente'] },
   { href: '/notas', label: 'Notas', icon: '📝', roles: ['rector', 'docente'] },
-  { href: '/inventario', label: 'Inventario', icon: '📦', roles: ['rector', 'administrativo'] },
 ]
 
 interface SidebarProps {

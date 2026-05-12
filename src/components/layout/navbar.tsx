@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
-import { IconHome, IconClipboard, IconBook, IconPackage, IconLogout } from '@/components/ui/icons'
+import { IconHome, IconClipboard, IconBook, IconLogout } from '@/components/ui/icons'
 import type { Rol } from '@/types/database'
 
 interface NavItem {
@@ -19,7 +19,6 @@ const navItems: NavItem[] = [
   { href: '/',            label: 'Inicio',     Icon: IconHome,      roles: ['rector', 'docente', 'administrativo'] },
   { href: '/asistencia',  label: 'Asistencia', Icon: IconClipboard, roles: ['rector', 'docente'] },
   { href: '/notas',       label: 'Notas',      Icon: IconBook,      roles: ['rector', 'docente'] },
-  { href: '/inventario',  label: 'Inventario', Icon: IconPackage,   roles: ['rector', 'administrativo'] },
 ]
 
 interface NavbarProps {

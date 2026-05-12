@@ -1,6 +1,5 @@
 export type Rol = 'rector' | 'docente' | 'administrativo'
 export type EstadoAsistencia = 'presente' | 'ausente' | 'tarde' | 'excusa'
-export type EstadoRecurso = 'disponible' | 'prestado' | 'mantenimiento' | 'dado_de_baja'
 
 export interface Profile {
   id: string
@@ -81,34 +80,6 @@ export interface Nota {
   created_at: string
 }
 
-export interface CategoriaInventario {
-  id: string
-  nombre: string
-}
-
-export interface Recurso {
-  id: string
-  nombre: string
-  codigo: string
-  categoria_id: string
-  estado: EstadoRecurso
-  ubicacion?: string
-  cantidad: number
-  descripcion?: string
-  created_at: string
-}
-
-export interface Prestamo {
-  id: string
-  recurso_id: string
-  solicitante_id: string
-  fecha_prestamo: string
-  fecha_devolucion: string
-  devuelto_en?: string
-  observacion?: string
-  created_at: string
-}
-
 export interface Database {
   public: {
     Tables: {
@@ -121,9 +92,6 @@ export interface Database {
       asignaciones: { Row: Asignacion; Insert: Omit<Asignacion, 'id'>; Update: Partial<Asignacion> }
       asistencia: { Row: Asistencia; Insert: Omit<Asistencia, 'id' | 'created_at'>; Update: Partial<Asistencia> }
       notas: { Row: Nota; Insert: Omit<Nota, 'id' | 'created_at'>; Update: Partial<Nota> }
-      categorias_inventario: { Row: CategoriaInventario; Insert: Omit<CategoriaInventario, 'id'>; Update: Partial<CategoriaInventario> }
-      recursos: { Row: Recurso; Insert: Omit<Recurso, 'id' | 'created_at'>; Update: Partial<Recurso> }
-      prestamos: { Row: Prestamo; Insert: Omit<Prestamo, 'id' | 'created_at'>; Update: Partial<Prestamo> }
     }
   }
 }

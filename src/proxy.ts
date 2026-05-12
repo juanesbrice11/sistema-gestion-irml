@@ -25,7 +25,6 @@ export async function proxy(request: NextRequest) {
 
   const isProtected = request.nextUrl.pathname.startsWith('/asistencia') ||
     request.nextUrl.pathname.startsWith('/notas') ||
-    request.nextUrl.pathname.startsWith('/inventario') ||
     request.nextUrl.pathname === '/'
 
   if (isProtected && !user) {
