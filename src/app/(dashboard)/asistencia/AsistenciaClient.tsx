@@ -22,6 +22,7 @@ type AsignacionRector = Asignacion & {
 
 type Estudiante = { id: string; nombre: string; apellido: string }
 type EstadoMap = Record<string, EstadoAsistencia>
+type ObservacionMap = Record<string, string>
 
 interface Props {
   asignaciones: (Asignacion | AsignacionRector)[]
@@ -37,6 +38,7 @@ export default function AsistenciaClient({ asignaciones, esRector, adminData }: 
   const [fecha, setFecha] = useState(hoy)
   const [estudiantes, setEstudiantes] = useState<Estudiante[]>([])
   const [estados, setEstados] = useState<EstadoMap>({})
+  const [observaciones, setObservaciones] = useState<ObservacionMap>({})
   const [hayRegistros, setHayRegistros] = useState(false)
   const [cargando, setCargando] = useState(false)
   const [guardado, setGuardado] = useState(false)
@@ -61,11 +63,16 @@ export default function AsistenciaClient({ asignaciones, esRector, adminData }: 
     setHayRegistros(tieneRegistros)
 
     const mapa: EstadoMap = {}
+    const obsMap: ObservacionMap = {}
     alumnos?.forEach((e) => { mapa[e.id] = 'presente' })
-    registros?.forEach((r) => { mapa[r.estudiante_id] = r.estado })
+    registros?.forEach((r) => {
+      mapa[r.estudiante_id] = r.estado
+      if (r.observacion) obsMap[r.estudiante_id] = r.observacion
+    })
 
     setEstudiantes(alumnos ?? [])
     setEstados(mapa)
+    setObservaciones(obsMap)
     setCargando(false)
   }
 
@@ -81,6 +88,14 @@ export default function AsistenciaClient({ asignaciones, esRector, adminData }: 
 
   function onCambiarEstado(estudianteId: string, estado: EstadoAsistencia) {
     setEstados((prev) => ({ ...prev, [estudianteId]: estado }))
+    // Si cambia a un estado que no requiere motivo, limpia la observación
+    if (estado === 'presente' || estado === 'ausente') {
+      setObservaciones((prev) => { const next = { ...prev }; delete next[estudianteId]; return next })
+    }
+  }
+
+  function onCambiarObservacion(estudianteId: string, observacion: string) {
+    setObservaciones((prev) => ({ ...prev, [estudianteId]: observacion }))
   }
 
   function guardar() {
@@ -88,9 +103,11 @@ export default function AsistenciaClient({ asignaciones, esRector, adminData }: 
       const registros = estudiantes.map((e) => ({
         estudiante_id: e.id,
         estado: estados[e.id] ?? 'presente',
+        observacion: observaciones[e.id] ?? '',
       }))
       await registrarAsistencia(asignacionId, fecha, registros)
       setGuardado(true)
+      setHayRegistros(true)
     })
   }
 
@@ -99,6 +116,7 @@ export default function AsistenciaClient({ asignaciones, esRector, adminData }: 
     nombre: e.nombre,
     apellido: e.apellido,
     estado: estados[e.id] ?? 'presente',
+    observacion: observaciones[e.id] ?? '',
   }))
 
   const asigSeleccionada = asignaciones.find((a) => a.id === asignacionId)
@@ -224,6 +242,7 @@ export default function AsistenciaClient({ asignaciones, esRector, adminData }: 
                 filas={filas}
                 fecha={fecha}
                 onCambiarEstado={onCambiarEstado}
+                onCambiarObservacion={onCambiarObservacion}
                 readonly={esRector}
               />
 
